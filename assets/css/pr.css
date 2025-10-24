@@ -1,0 +1,97 @@
+body {
+    background-color: #f8f9fa;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    color: #212529;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    margin: 40px auto;
+    max-width: 95%;
+}
+
+h3 {
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-bottom: 2px solid #0d6efd;
+    padding-bottom: 10px;
+    margin-bottom: 30px;
+    font-weight: 600;
+    color: #0d6efd;
+}
+
+table {
+    font-size: 14px;
+    border: 1px solid #dee2e6;
+}
+
+.table thead {
+    background-color: #0d6efd;
+    color: white;
+}
+
+.table-striped tbody tr:nth-of-type(odd) {
+    background-color: #f2f6fc;
+}
+
+.table td, .table th {
+    vertical-align: middle;
+    text-align: center;
+}
+
+footer {
+    margin-top: 30px;
+    text-align: center;
+    font-size: 13px;
+    color: #6c757d;
+    border-top: 1px solid #dee2e6;
+    padding-top: 10px;
+}
+
+@media print {
+    body {
+        background-color: white !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+
+    .container {
+        margin: 0 auto !important;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1) !important;
+        border-radius: 10px !important;
+        page-break-inside: avoid !important;
+    }
+
+    table {
+        border-collapse: collapse !important;
+        width: 100% !important;
+    }
+
+    .table thead {
+        background-color: #0d6efd !important;
+        color: #000 !important;
+        -webkit-print-color-adjust: exact !important;
+    }
+
+    .table-striped tbody tr:nth-of-type(odd) {
+        background-color: #f2f6fc !important;
+    }
+
+    footer {
+        position: fixed;
+        bottom: 10px;
+        width: 100%;
+        border-top: 1px solid #dee2e6 !important;
+        background: white !important;
+        padding-top: 8px;
+    }
+
+    table, tr, td, th {
+        page-break-inside: avoid !important;
+    }
+}
