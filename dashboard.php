@@ -86,6 +86,7 @@ $role = $_SESSION['role'];
 
 <script src="node_modules/sweetalert2/dist/sweetalert2.min.js"></script>
 <script src="node_modules/jquery/dist/jquery.min.js"></script>
+<script src="node_modules/bootstrap/dist/css/bootstrap.mn.js"></script>
 <script src="node_modules/popper.js/dist/popper.min.js"></script>
 <script src="node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
 
