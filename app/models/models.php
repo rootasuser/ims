@@ -26,16 +26,18 @@ class models {
         try {
             $stmt = $this->pdo->prepare("
                 INSERT INTO ims_devices
-                (name, brand, model, serial_number, category, device_condition, current_status, pr, quantity, borrower, usrid, role)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                (name, brand, model, serial_number, category, 
+                device_condition, current_status, 
+                pr, quantity, borrower, usrid, role)
+                VALUES (?, ?, ?, ?, ?, ?, 
+                ?, ?, ?, ?, ?, ?)
             ");
             return $stmt->execute([
                 $name, $brand, $model, $serialNum, $cat, $cond,
                 $curr_stat, $pr, $qnty, $borrower, $usrid, $role
             ]);
-        } catch (PDOException $e) {
-            error_log($e->getMessage());
-            return false;
+        } catch (PDOException $e) { error_log($e->getMessage());
+        return false;
         }
     }
 
@@ -69,14 +71,22 @@ class models {
     
         $stmt = $this->pdo->prepare("
             UPDATE ims_devices SET
-                name=?, brand=?, model=?, serial_number=?, category=?, device_condition=?, current_status=?, pr=?, quantity=?, borrower=?
+                name=?, brand=?, model=?, serial_number=?,
+                 category=?, device_condition=?, 
+                 current_status=?, pr=?, 
+                 quantity=?, borrower=?
             WHERE d_uid=?
         ");
-        $updated = $stmt->execute([$name, $brand, $model, $serialNum, $cat, $cond, $curr_stat, $pr, $qnty, $borrower, $d_uid]);
+        $updated = $stmt->execute([$name, 
+        $brand, $model, 
+        $serialNum, $cat, $cond, 
+        $curr_stat, $pr, $qnty, 
+        $borrower, $d_uid]);
     
         if ($updated) {
             $stmt = $this->pdo->prepare("
-                INSERT INTO ims_device_logs (d_uid, usrid, action, old_data, new_data)
+                INSERT INTO ims_device_logs (d_uid, usrid, 
+                action, old_data, new_data)
                 VALUES (?, ?, 'update', ?, ?)
             ");
             $stmt->execute([
@@ -126,8 +136,14 @@ class models {
     
             $stmt = $this->pdo->prepare("
                 INSERT INTO ims_archive 
-                (d_uid, name, brand, model, serial_number, category, device_condition, current_status, pr, quantity, borrower, usrid, role)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                (d_uid, name, brand, 
+                model, serial_number, 
+                category, device_condition, 
+                current_status, pr, quantity, 
+                borrower, usrid, role)
+                VALUES (?, ?, 
+                ?, ?, ?, ?, ?, ?, 
+                ?, ?, ?, ?, ?)
             ");
             $stmt->execute([
                 $device['d_uid'], 
@@ -146,7 +162,8 @@ class models {
             ]);
     
             $stmt = $this->pdo->prepare("
-                INSERT INTO ims_device_logs (d_uid, usrid, action, old_data, new_data)
+                INSERT INTO ims_device_logs (d_uid, usrid, 
+                action, old_data, new_data)
                 VALUES (?, ?, 'archive', ?, ?)
             ");
             $stmt->execute([
@@ -167,11 +184,7 @@ class models {
             $this->pdo->commit();
             return true;
     
-        } catch (\Throwable $e) {
-            $this->pdo->rollBack();
-            error_log("ArchiveDevice Error: " . $e->getMessage());
-            return false;
-        }
+        } catch (\Throwable $e) { $this->pdo->rollBack(); error_log("Err: " . $e->getMessage()); return false; }
     }
     
 

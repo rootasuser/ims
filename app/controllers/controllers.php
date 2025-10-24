@@ -2,31 +2,23 @@
 require_once __DIR__ . '/../models/models.php';
 
 class controllers {
+
     private models $model;
 
-    public function __construct() {
-        $this->model = new models();
-    }
+    public function __construct() { $this->model = new models(); }
 
-    public function authUser(array $input): array {
+    public function authUser(array $input): array 
+    {
+
         $username = trim($input['username'] ?? '');
         $password = $input['password'] ?? '';
         $csrf     = $input['tkn_csrf'] ?? '';
 
-        if (empty($_SESSION['tkn_csrf']) || !hash_equals($_SESSION['tkn_csrf'], $csrf)) {
-            http_response_code(403);
-            return ['success' => false, 'error' => 'Invalid CSRF token'];
-        }
-
-        if (!$username || !$password) {
-            http_response_code(400);
-            return ['success' => false, 'error' => 'Missing username or password'];
-        }
+        if (empty($_SESSION['tkn_csrf']) || !hash_equals($_SESSION['tkn_csrf'], $csrf)) { http_response_code(403); return ['success' => false, 'error' => 'Invalid CSRF token']; }
+        if (!$username || !$password) { http_response_code(400); return ['success' => false, 'error' => 'Missing username or password']; }
 
         $user = $this->model->authUser($username, $password);
-        if (!$user) {
-            return ['success' => false, 'error' => 'Invalid credentials'];
-        }
+        if (!$user) { return ['success' => false, 'error' => 'Invalid credentials']; }
 
         session_regenerate_id(true);
         $_SESSION['logged_in'] = true;
@@ -34,14 +26,12 @@ class controllers {
         $_SESSION['username']  = $user['username'];
         $_SESSION['role']      = $user['role'];
 
-        return [
-            'success' => true,
-            'message' => 'Login successful',
-            'location' => ['redirect' => 'dashboard.php']
-        ];
+        return [ 'success' => true, 'message' => 'Login success', 'location' => ['redirect' => 'dashboard.php'] ];
     }
 
-    public function addItems(array $input): array {
+    public function addItems(array $input): array 
+    {
+
         $usrid = isset($input['usrid']) ? (int)$input['usrid'] : 0;
         $role = $input['role'] ?? '';
         $name = trim($input['name'] ?? '');
@@ -67,15 +57,10 @@ class controllers {
             'pr' => $pr
         ];
 
-        foreach ($required as $field => $value) {
-            if (empty($value)) {
-                http_response_code(400);
-                return ['success' => false, 'error' => ucfirst($field) . ' is required'];
-            }
-        }
+        foreach ($required as $field => $value) { if (empty($value)) { http_response_code(400); return ['success' => false, 'error' => ucfirst($field) . ' is required']; } }
 
         try {
-            $added = $this->model->addItems(
+                $added = $this->model->addItems(
                 $name, $brand, $model, $serialNum, $cat, $cond,
                 $curr_stat, $pr, $qnty, $borrower, $usrid, $role
             );
@@ -84,14 +69,12 @@ class controllers {
                 ? ['success' => true, 'message' => 'Device added successfully']
                 : ['success' => false, 'error' => 'Failed to add device'];
 
-        } catch (\Throwable $e) {
-            error_log($e->getMessage());
-            http_response_code(500);
-            return ['success' => false, 'error' => 'Internal server error'];
-        }
+        } catch (\Throwable $e) { error_log($e->getMessage()); http_response_code(500); return ['success' => false, 'error' => 'I.S Err']; }
     }
 
-    public function editItems(array $input): array {
+    public function editItems(array $input): array 
+    {
+
         $d_uid = (int)($input['d_uid'] ?? 0);
         $usrid = (int)($_SESSION['user_id'] ?? 0);
         $name = trim($input['name'] ?? '');
@@ -105,70 +88,36 @@ class controllers {
         $pr = trim($input['pr'] ?? '');
         $borrower = trim($input['borrower'] ?? '');
     
-        if (!$d_uid || !$name || !$brand || !$model || !$serialNum) {
-            http_response_code(400);
-            return ['success' => false, 'error' => 'Missing required fields'];
-        }
+        if (!$d_uid || !$name || !$brand || !$model || !$serialNum) { http_response_code(400); return ['success' => false, 'error' => 'Missing required fields']; }
     
         try {
+
             $updated = $this->model->updateDevice($d_uid, $usrid, $name, $brand, $model, $serialNum, $cat, $cond, $curr_stat, $pr, $qnty, $borrower);
     
-            if ($updated) {
-                $device = $this->model->getDeviceById($d_uid);
-                return ['success' => true, 'message' => 'Device updated successfully', 'device' => $device];
-            }
+        if ($updated) { $device = $this->model->getDeviceById($d_uid); return ['success' => true, 'message' => 'Device updated successfully', 'device' => $device]; }
+
             return ['success' => false, 'error' => 'Failed to update device'];
-        } catch (\Throwable $e) {
-            error_log($e->getMessage());
-            http_response_code(500);
-            return ['success' => false, 'error' => 'Internal server error'];
-        }
+
+        } catch (\Throwable $e) { error_log($e->getMessage()); http_response_code(500); return ['success' => false, 'error' => 'I.S Err']; }
     }
 
     public function archiveItem(array $input): array
         {
-        
-            if (session_status() === PHP_SESSION_NONE) {
-                session_start();
-            }
+            if (session_status() === PHP_SESSION_NONE) { session_start(); }
 
             $d_uid = isset($input['d_uid']) ? (int)$input['d_uid'] : 0;
             $usrid = isset($_SESSION['user_id']) ? (int)$_SESSION['user_id'] : 0;
 
-            if ($d_uid <= 0 || $usrid <= 0) {
-                http_response_code(400);
-                return [
-                    'success' => false,
-                    'error' => 'Missing or invalid device/user ID.'
-                ];
-            }
+            if ($d_uid <= 0 || $usrid <= 0) { http_response_code(400); return [ 'success' => false, 'error' => 'Missing or invalid device/usrid.']; }
 
             try {
+
                 $archived = $this->model->archiveDevice($d_uid, $usrid);
 
-                if ($archived) {
-                    return [
-                        'success' => true,
-                        'message' => 'Device archived successfully.'
-                    ];
-                } else {
-                    http_response_code(500);
-                    return [
-                        'success' => false,
-                        'error' => 'Failed to archive the device. Please try again.'
-                    ];
-                }
+                if ($archived) { return [ 'success' => true, 'message' => 'Device archived successfully.' ];
+                } else { http_response_code(500); return [ 'success' => false, 'error' => 'Failed to archive the device. Please try again.' ]; }
 
-            } catch (\Throwable $e) {
-                error_log("[ArchiveItem Error] " . $e->getMessage());
-                http_response_code(500);
-                return [
-                    'success' => false,
-                    'error' => 'Internal server error.'
-                ];
-            }
+            } catch (\Throwable $e) { error_log("Err " . $e->getMessage()); http_response_code(500); return [ 'success' => false, 'error' => 'I.S Err.']; }
         }
-
-    
-    
+ 
 }

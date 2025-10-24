@@ -19,28 +19,17 @@ header('Pragma: no-cache');
 require_once __DIR__ . '/../app/controllers/controllers.php';
 
 try {
-    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-        http_response_code(405);
-        echo json_encode(['error' => 'Method Not Allowed']);
-        exit;
-    }
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') { http_response_code(405); echo json_encode(['error' => 'Method Not Allowed']); exit; }
 
     $input = json_decode(file_get_contents('php://input'), true);
+
     if (!is_array($input)) $input = $_POST;
 
     $action = strtolower($input['action'] ?? '');
-    if (!$action) {
-        http_response_code(400);
-        echo json_encode(['error' => 'Missing action parameter']);
-        exit;
-    }
+    if (!$action) { http_response_code(400); echo json_encode(['error' => 'Missing action param']); exit; }
 
     $allowed = ['login', 'logout', 'additem', 'edititem', 'archiveitem'];
-    if (!in_array($action, $allowed, true)) {
-        http_response_code(400);
-        echo json_encode(['error' => 'Invalid action']);
-        exit;
-    }
+    if (!in_array($action, $allowed, true)) { http_response_code(400); echo json_encode(['error' => 'Invalid action']); exit; }
 
     $controller = new controllers();
 
@@ -69,8 +58,4 @@ try {
 
     echo json_encode($response, JSON_UNESCAPED_SLASHES);
 
-} catch (Throwable $e) {
-    error_log($e->getMessage());
-    http_response_code(500);
-    echo json_encode(['error' => 'Internal server error']);
-}
+} catch (Throwable $e) { error_log($e->getMessage()); http_response_code(500); echo json_encode(['error' => 'I.S Err']); }
